@@ -1,0 +1,18 @@
+[
+    {
+        "package": "onegov.org",
+        "tests": "onegov.org[test]"
+    },
+    {
+        "package": "onegov.town",
+        "tests": "onegov.town[test]"
+    },
+    {
+        "package": "onegov.feriennet",
+        "tests": "onegov.feriennet[test]"
+    },
+    {
+        "package": "onegov.onboarding",
+        "tests": "onegov.onboarding[test]"
+    }
+]

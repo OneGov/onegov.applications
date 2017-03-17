@@ -1,0 +1,52 @@
+language: python
+python: "3.4"
+cache: pip
+
+env:
+    global:
+        - ES_URL=https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-2.2.0.tar.gz
+        - ES_BINARY=/tmp/elasticsearch/bin/elasticsearch
+    matrix:
+        - ONEGOV_APPLICATION=onegov.org
+        - ONEGOV_APPLICATION=onegov.town
+        - ONEGOV_APPLICATION=onegov.feriennet
+        - ONEGOV_APPLICATION=onegov.onboarding
+
+addons:
+    postgresql: "9.3"
+
+before_install:
+    - npm install --save-dev travis-after-all
+
+install:
+    - ./.travis-install.sh
+
+script:
+    - py.test -s
+
+after_script:
+    - $TRAVIS_BUILD_DIR/.tox/py34/bin/pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > $TRAVIS_BUILD_DIR/requirements.txt
+    - cat requirements.txt
+    - |
+        $(npm bin)/travis-after-all
+        export TRAVIS_AFTER_ALL_EXIT_CODE=$?
+
+deploy:
+
+  - provider: releases
+    api_key:
+        secure: "YHVjfND67YCFbMBXGKlPTsRAmFnRWPy2iJjndV9ZvnUCoLms83+gu0s2VcyBTEHfPXLk1uguhho8jpg8vLRiMJ+vAlQXfjOwZYq7Hx1CmAYUUXmzHsQqshxv9q1XZ8YVCGcH6eJgZbhJSddsPxmwl0BpI2wpHFiEw9ycJoX2QsLD0xd3T0ceWag7uBscm0mferSsIHaMC00tyDgyGM4EnmM8sUA61HmhLeCFz2losy8f3AWlY1Em4dw37JmJBU5ouaWmmKCYh+if3kD9hak8CopOJsPhJh+HQjnPYB7kmyJSndz0PPouESn/8NsKP/sYWixP+hkefpM9U5FFzhj/LbX54e8RMurWTD2Okt/r8DtGclWpUDSI78y+HAXkWsSAK6L/N5XKeX/DA7aXrsKnoV4dVGz9Z4ChGNgNptYyAN/EKsFL+kTha9grTrwid6C75nIXPnqB4fDo2jZOsa26l/mPuxjieCRUs9j6ix10eGF2GggR2g8RZ5auJhlHXgW95FNTKgrBrEI5Ng1fSjVI0CYvmG7/5nuHY8P9KEUrKoDRJ58zbOwLunWAAaEagtCbVZAC0jce9tnBMg/RA7ay36WAP5t+BxGZVS5LGsGzvY+Hdbq8pwk3wSCAxUFWg3uOox6WEhIXZ/DaXTH7dyas8sLL70bbVQ3xPo53AFfgs5E="
+    file: requirements.txt
+    skip_cleanup: true
+    on:
+        tags: true
+        condition: $TRAVIS_AFTER_ALL_EXIT_CODE = 0
+
+  - provider: pypi
+    distributions: "sdist bdist_wheel"
+    user: seantis
+    password:
+        secure: "YHVjfND67YCFbMBXGKlPTsRAmFnRWPy2iJjndV9ZvnUCoLms83+gu0s2VcyBTEHfPXLk1uguhho8jpg8vLRiMJ+vAlQXfjOwZYq7Hx1CmAYUUXmzHsQqshxv9q1XZ8YVCGcH6eJgZbhJSddsPxmwl0BpI2wpHFiEw9ycJoX2QsLD0xd3T0ceWag7uBscm0mferSsIHaMC00tyDgyGM4EnmM8sUA61HmhLeCFz2losy8f3AWlY1Em4dw37JmJBU5ouaWmmKCYh+if3kD9hak8CopOJsPhJh+HQjnPYB7kmyJSndz0PPouESn/8NsKP/sYWixP+hkefpM9U5FFzhj/LbX54e8RMurWTD2Okt/r8DtGclWpUDSI78y+HAXkWsSAK6L/N5XKeX/DA7aXrsKnoV4dVGz9Z4ChGNgNptYyAN/EKsFL+kTha9grTrwid6C75nIXPnqB4fDo2jZOsa26l/mPuxjieCRUs9j6ix10eGF2GggR2g8RZ5auJhlHXgW95FNTKgrBrEI5Ng1fSjVI0CYvmG7/5nuHY8P9KEUrKoDRJ58zbOwLunWAAaEagtCbVZAC0jce9tnBMg/RA7ay36WAP5t+BxGZVS5LGsGzvY+Hdbq8pwk3wSCAxUFWg3uOox6WEhIXZ/DaXTH7dyas8sLL70bbVQ3xPo53AFfgs5E="
+    on:
+        tags: true
+        condition: $TRAVIS_AFTER_ALL_EXIT_CODE = 0
