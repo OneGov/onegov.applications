@@ -14,5 +14,9 @@
     {
         "package": "onegov.onboarding",
         "tests": "onegov.onboarding[test]"
-    }
+    },
+    {
+        "package": "onegov.election_day",
+        "tests": "onegov.election_day[test]"
+    },
 ]
