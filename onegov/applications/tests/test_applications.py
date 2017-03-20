@@ -2,6 +2,7 @@ import multiprocessing
 import os
 import subprocess
 import sys
+import tempfile
 import time
 
 
@@ -11,14 +12,15 @@ def spawn_command(path):
 
     return subprocess.Popen(
         [sys.executable, '-m', 'pytest', path],
-        stdout=subprocess.PIPE,
+        stdout=tempfile.NamedTemporaryFile(),
         stderr=subprocess.STDOUT,
-        env=env
+        env=env,
     )
 
 
 def print_result(process):
     print()
+    process.stdout.seek(0)
     for line in process.stdout.readlines():
         print(line.decode('utf-8').rstrip('\n'))
     print(flush=True)
@@ -31,9 +33,11 @@ def run_single_application(applications):
         print('.', end='', flush=True)
 
         try:
-            process.wait(timeout=10.0)
+            process.wait(timeout=1.0)
         except subprocess.TimeoutExpired:
             pass
+
+        time.sleep(4.0)
 
     return process.returncode
 
@@ -62,7 +66,7 @@ def run_multiple_applications(applications):
             if paths:
                 processes.append(spawn_command(paths.pop()))
 
-        time.sleep(1.0)
+        time.sleep(4.0)
 
     return max(p.returncode for p in processes)
 
