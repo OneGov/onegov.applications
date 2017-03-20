@@ -10,18 +10,23 @@ def spawn_command(path):
     env = os.environ.copy()
     env['PYTHONPATH'] = ':'.join(sys.path)
 
-    return subprocess.Popen(
-        [sys.executable, '-m', 'pytest', path],
-        stdout=tempfile.NamedTemporaryFile(),
+    stdout = tempfile.NamedTemporaryFile()
+
+    process = subprocess.Popen(
+        [sys.executable, '-m', 'pytest', path, '-x'],
+        stdout=stdout,
         stderr=subprocess.STDOUT,
         env=env,
     )
+    process.stdout_file = stdout
+
+    return process
 
 
 def print_result(process):
     print()
-    process.stdout.seek(0)
-    for line in process.stdout.readlines():
+    process.stdout_file.seek(0)
+    for line in process.stdout_file.readlines():
         print(line.decode('utf-8').rstrip('\n'))
     print(flush=True)
 
@@ -38,6 +43,8 @@ def run_single_application(applications):
             pass
 
         time.sleep(4.0)
+
+    print_result(process)
 
     return process.returncode
 
