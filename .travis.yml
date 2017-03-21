@@ -31,6 +31,7 @@ after_script:
     - |
         $(npm bin)/travis-after-all
         export TRAVIS_AFTER_ALL_EXIT_CODE=$?
+        echo $TRAVIS_AFTER_ALL_EXIT_CODE
 
 deploy:
 
