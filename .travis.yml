@@ -25,7 +25,7 @@ install:
 script:
     - py.test -s
 
-after_script:
+before_deploy:
     - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > $TRAVIS_BUILD_DIR/requirements.txt
     - cat requirements.txt
     - |
