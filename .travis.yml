@@ -4,8 +4,7 @@ cache: pip
 
 env:
     global:
-        - ES_URL=https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-2.2.0.tar.gz
-        - ES_BINARY=/tmp/elasticsearch/bin/elasticsearch
+        - ES_VERSION=2.4.3
     matrix:
         - ONEGOV_APPLICATION=onegov.org
         - ONEGOV_APPLICATION=onegov.town
