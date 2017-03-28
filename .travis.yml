@@ -5,6 +5,7 @@ cache: pip
 env:
   global:
     - ES_VERSION=5.2.2
+    - JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
   matrix:
     - ONEGOV_APPLICATION=onegov.org
     - ONEGOV_APPLICATION=onegov.town
@@ -12,14 +13,10 @@ env:
     - ONEGOV_APPLICATION=onegov.onboarding
     - ONEGOV_APPLICATION=onegov.election_day
 
-jdk:
-  - oraclejdk8
-
 addons:
   postgresql: "9.3"
   apt:
     packages:
-      - oracle-java8-installer
       - oracle-java8-set-default
 
 before_install:
