@@ -10,7 +10,7 @@ VERSION = [
     {
         'name': 'year',
         'type': 'date',
-        'fmt': 'YY'
+        'fmt': 'YYYY'
     },
     {
         'name': 'month',
@@ -27,4 +27,12 @@ VERSION = [
 VCS = {
     'name': 'git',
     'commit_message': "Release {{ new_version }}",
+}
+
+ACTIONS = {
+    'build': {
+        'type': 'conditional_reset',
+        'field': 'build',
+        'update_fields': ['year', 'month']
+    }
 }

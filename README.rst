@@ -33,7 +33,7 @@ To create a new release for onegov.applications simply run the following
 commands in the repository's folder::
 
   pip install punch.py
-  punch --part build
+  punch --action build
 
   git push
   git push --tags
