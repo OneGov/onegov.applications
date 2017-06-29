@@ -8,10 +8,10 @@ env:
     - JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
   matrix:
     - ONEGOV_APPLICATION=onegov.org
+    - ONEGOV_APPLICATION=onegov.election_day
     - ONEGOV_APPLICATION=onegov.town
     - ONEGOV_APPLICATION=onegov.feriennet
     - ONEGOV_APPLICATION=onegov.onboarding
-    - ONEGOV_APPLICATION=onegov.election_day
 
 addons:
   postgresql: "9.3"
