@@ -1,3 +1,3 @@
 year = 2017
-month = 6
-build = 20
+month = 7
+build = 0
