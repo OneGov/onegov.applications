@@ -4,7 +4,7 @@ cache: pip
 
 env:
   global:
-    - ES_VERSION=5.2.2
+    - ES_VERSION=5.5.0
     - JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
   matrix:
     - ONEGOV_APPLICATION=onegov.org
