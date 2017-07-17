@@ -18,5 +18,9 @@
     {
         "package": "onegov.election_day",
         "tests": "onegov.election_day[test]"
+    },
+    {
+        "package": "onegov.gazette",
+        "tests": "onegov.gazette[test]"
     }
 ]
