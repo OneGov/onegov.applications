@@ -19,6 +19,7 @@ addons:
   apt:
     packages:
       - oracle-java8-set-default
+      - google-chrome-stable
 
 before_install:
   - npm install --save-dev travis-after-all
