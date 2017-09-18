@@ -7,7 +7,7 @@ dist: trusty
 
 env:
   global:
-    - ES_VERSION=5.5.0
+    - ES_VERSION=5.6.0
     - JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
   matrix:
     - ONEGOV_APPLICATION=onegov.org
