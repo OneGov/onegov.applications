@@ -16,6 +16,7 @@ env:
   global:
     - ES_VERSION=5.6.0
     - JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
+    - secure: QKjR3DnOLF4zJ/DEF6j0TQQdOiZhzW7j7HJFEILMxQIh3IFarS45J55c8jI9tnJrCsIhrRYcyoek0teFumstr/aF+84e9FITDLVixml1o0Jp26AsgjwWnYAHgAfbmNTqAhWed31D5cczjqwkMIs7nQH/bv8V2A6u8QHErbZpyUTjrjV4Kl0Q6vHeVP9nr126pgShqWFeSeNL9E/hMQS4J6mmJHaIZj3BCAlg8dZ/i1giBSFQ1k2WhcLGfpb7bTq+xmhMnQaGCH72xt+IuO2gcpyhrn58ZbDdezeWFSCiBeuuqhnQbDeZN/5SCQhssb4z67eTqFNSgxjNtr31Z11rva4KOiKm8JLQlctV901HtWr/FLrcchH3bgjVqpn0YPUVVuH8qbzbqRVHItpLA2rhdfZ5MspLCkHa0kwTK++XxC7Icgx1KHoCIurtV1W5yvXJx8rs1JaxXjShzyT3v41pKBHtGifBII6gPhE5p970tXJBkPr0ocaFJTUzwp39hN5LhRqITFknIaM8cyw+eML8kHJucN3eqFYetWcZo2sAql/t53EuZWtDhp2CZdq3FcebWDeRZTT6un9+rvYP1F7twqhGEpJ3ClMjHC6yEjX4fz1Vh7Q6zCUHiWdMylW/axGI07SUYNbvgnyQcsGIPGrXikh36e56C35xPyZjgdD8R+E=
   matrix:
     - ONEGOV_APPLICATION=onegov.org
     - ONEGOV_APPLICATION=onegov.election_day
@@ -31,17 +32,29 @@ addons:
       - oracle-java8-set-default
       - google-chrome-stable
 
-install:
-  - python install_requirements.py
-  - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > "${TRAVIS_BUILD_DIR}"/requirements.txt
-  - cat requirements.txt
-
-script:
-  - py.test -s
+stages:
+  - install
+  - test
+  - release
 
 jobs:
   include:
-    - stage: Release
+    - stage: install
+      install:
+        - pip install travispy
+        - python install.py
+        - echo '<requirements>\n'; pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g"; echo '\n</requirements>'
+      script: skip
+    - stage: test
+      install:
+        - pip install travispy
+        - python install.py
+      script:
+        - py.test -s
+    - stage: release
+      install:
+        - pip install travispy
+        - python install.py
       script: skip
       deploy:
         - provider: releases
