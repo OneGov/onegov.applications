@@ -94,7 +94,7 @@ class Installer(object):
     def load_requirements(self):
         obj = self.s3.Object(self.bucket, self.bucket_key)
 
-        self.requirements_txt.write(obj.get()['Body'].decode('utf-8'))
+        self.requirements_txt.write(obj.get()['Body'].read().decode('utf-8'))
         self.requirements_txt.flush()
         self.requirements_txt.seek(0)
 
