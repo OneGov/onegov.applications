@@ -33,16 +33,16 @@ addons:
 
 install:
   - python install_requirements.py
+  - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > "${TRAVIS_BUILD_DIR}"/requirements.txt
+  - cat requirements.txt
 
 script:
   - py.test -s
-  - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > "${TRAVIS_BUILD_DIR}"/requirements.txt
-  - cat requirements.txt
 
 jobs:
   include:
     - stage: Release
-      script: echo "Deploying to GitHub/PyPI"
+      script: skip
       deploy:
         - provider: releases
           api_key:
