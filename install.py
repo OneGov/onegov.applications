@@ -72,7 +72,7 @@ class Installer(object):
     def save_requirements(self):
         requirements = subprocess.check_output(('pip', 'freeze'))
         requirements = (line.strip() for line in requirements.splitlines())
-        requirements = (line for line in requirements if line)
+        requirements = (line.decode('utf-8') for line in requirements if line)
         requirements = list(requirements)
 
         for ix, requirement in enumerate(requirements):
