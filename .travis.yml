@@ -24,9 +24,6 @@ addons:
       - oracle-java8-set-default
       - google-chrome-stable
 
-before_install:
-  - npm install --save-dev travis-after-all
-
 install:
   - ./.travis-install.sh
 
@@ -34,27 +31,24 @@ script:
   - py.test -s
   - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > $TRAVIS_BUILD_DIR/requirements.txt
   - cat requirements.txt
-  - |
-    $(npm bin)/travis-after-all
-    export TRAVIS_AFTER_ALL_EXIT_CODE=$?
-    echo $TRAVIS_AFTER_ALL_EXIT_CODE
 
-deploy:
+jobs:
+  include:
+    - stage: Release
+      script: echo "Deploying to GitHub/PyPI"
+      deploy:
+        - provider: releases
+          api_key:
+            secure: "E88gGnQCqnhx7VT2MNbna+/tMgpQpnV3QWkW29Ae5ne29Hpev3B8VKbW9ICFAWkim811khZQLFvKY8ZWGbRuJqdyud/sNlS25Keh1ThG0StX/TRQOZhLFvIQ6BO4g+cFq888xd7HjouyxNV14woc25ov6G2MZuzQRJYu0AZSX8LzKjSdTGdCy9kykZ+sTZeJAerWfi4jqJASp79G+MSZMtRkNnRdA96c2lDl5sn8vLnyz0R9cZSwLxmwn0lP18jkL+MEreBEtSjir/efDN3po4kYEsBx6lymfdJT31u+B0s4Sqy53STeuFt1zRfu5F2AeZkvBLtfT6U6dGPzZJoCCx1AaWQ/VBL4M7n7OCsY4hGTO7kuM+87WjqoBpDHN+HUpo5zrRvSv5UduM6lsqy5m7w7O5YzDtltKeEdLLbeIe7mOe84Liwat5xnxds7quBION8PCW/JdbUz49FFBuW2MXI0DZ0cvOzyju7SKMnrP7PQ+YS0zKI/WpCKWrdI54+Qomp3hYtUISiUZeZA04uflPhshEOBSZQYzznoSJIJ7t9lnntGVXPpKFqzcl862+U7GzHOa+4qcADDv10+7/6bBlZ2sSE45BTTWLjRw7B0lunBc/g4nALKPvmDbqL6APwBeuGahuKiLVPMlg+WM8e4DILg+LGgGqDcoisH/JlGMrQ="
+          file: requirements.txt
+          skip_cleanup: true
+          on:
+            tags: true
 
- - provider: releases
-   api_key:
-     secure: "E88gGnQCqnhx7VT2MNbna+/tMgpQpnV3QWkW29Ae5ne29Hpev3B8VKbW9ICFAWkim811khZQLFvKY8ZWGbRuJqdyud/sNlS25Keh1ThG0StX/TRQOZhLFvIQ6BO4g+cFq888xd7HjouyxNV14woc25ov6G2MZuzQRJYu0AZSX8LzKjSdTGdCy9kykZ+sTZeJAerWfi4jqJASp79G+MSZMtRkNnRdA96c2lDl5sn8vLnyz0R9cZSwLxmwn0lP18jkL+MEreBEtSjir/efDN3po4kYEsBx6lymfdJT31u+B0s4Sqy53STeuFt1zRfu5F2AeZkvBLtfT6U6dGPzZJoCCx1AaWQ/VBL4M7n7OCsY4hGTO7kuM+87WjqoBpDHN+HUpo5zrRvSv5UduM6lsqy5m7w7O5YzDtltKeEdLLbeIe7mOe84Liwat5xnxds7quBION8PCW/JdbUz49FFBuW2MXI0DZ0cvOzyju7SKMnrP7PQ+YS0zKI/WpCKWrdI54+Qomp3hYtUISiUZeZA04uflPhshEOBSZQYzznoSJIJ7t9lnntGVXPpKFqzcl862+U7GzHOa+4qcADDv10+7/6bBlZ2sSE45BTTWLjRw7B0lunBc/g4nALKPvmDbqL6APwBeuGahuKiLVPMlg+WM8e4DILg+LGgGqDcoisH/JlGMrQ="
-   file: requirements.txt
-   skip_cleanup: true
-   on:
-     tags: true
-     condition: $TRAVIS_AFTER_ALL_EXIT_CODE = 0
-
- - provider: pypi
-   distributions: "sdist bdist_wheel"
-   user: seantis
-   password:
-     secure: "ZUZo17DFF0vmXqbSpwkQoqAVgASINXQV7dQUQpEu0KeQQ8JoWgcmhmWID8+n+Ios3kOOKH/YIMb6PwPT9H2hv7e+ylL04vShBeMCn6wLKkPkfbd9IXiv8nSPfjSQ1Wid2sHpdiBXy6icMZGduidH4dJY2JhVyUQin09YPWILaMI8Gv748h7LqDHLoJ9ZFq/EQIIXuHstDT7y9uBRx6Az9ztWLEgTt1eFv9MdWw0UvAUHSAoBcSFskB4GVO40wZLm0VfEQkmkcNbW19dWVT1MKtFG7wj1dkGsajLZUP1oMfQfjN8XN+1jt4u1d6cil5YAJk6DXE+cBYCdkydRXPF2tjXzHx9viDoA3rSM3WBlhGBrsQDmd1KR90mA/o/X1ozPeFmpWLdXUI5yz0ky/QfTJM/4tEj6DF3ln85WJycMM4Te65YdG5hr8makjxr03lclSkv1W8dC0Z5GtcOYP1JtZVp+0HEOjleYY68/5Zr9t9UjSlfXLRyh7PkBtsyzudzHpgRxBQsRwiUsNPWMCxf1r0wh8rjHHjf2zo+b4wkTkwKEygJmrLxnLZyXIYbHH4QoyMzCD4bb96UWyz0NzKxVuy9XN8M0O0ZZK9JPvssQVU1VNhbt5AaliBCMAT4V9nHHM/FwKNxjHR6Xl+qkY12peMmv6pZ9V2wEBh3Lw74TqSM="
-   on:
-     tags: true
-     condition: $TRAVIS_AFTER_ALL_EXIT_CODE = 0
+        - provider: pypi
+          distributions: "sdist bdist_wheel"
+          user: seantis
+          password:
+            secure: "ZUZo17DFF0vmXqbSpwkQoqAVgASINXQV7dQUQpEu0KeQQ8JoWgcmhmWID8+n+Ios3kOOKH/YIMb6PwPT9H2hv7e+ylL04vShBeMCn6wLKkPkfbd9IXiv8nSPfjSQ1Wid2sHpdiBXy6icMZGduidH4dJY2JhVyUQin09YPWILaMI8Gv748h7LqDHLoJ9ZFq/EQIIXuHstDT7y9uBRx6Az9ztWLEgTt1eFv9MdWw0UvAUHSAoBcSFskB4GVO40wZLm0VfEQkmkcNbW19dWVT1MKtFG7wj1dkGsajLZUP1oMfQfjN8XN+1jt4u1d6cil5YAJk6DXE+cBYCdkydRXPF2tjXzHx9viDoA3rSM3WBlhGBrsQDmd1KR90mA/o/X1ozPeFmpWLdXUI5yz0ky/QfTJM/4tEj6DF3ln85WJycMM4Te65YdG5hr8makjxr03lclSkv1W8dC0Z5GtcOYP1JtZVp+0HEOjleYY68/5Zr9t9UjSlfXLRyh7PkBtsyzudzHpgRxBQsRwiUsNPWMCxf1r0wh8rjHHjf2zo+b4wkTkwKEygJmrLxnLZyXIYbHH4QoyMzCD4bb96UWyz0NzKxVuy9XN8M0O0ZZK9JPvssQVU1VNhbt5AaliBCMAT4V9nHHM/FwKNxjHR6Xl+qkY12peMmv6pZ9V2wEBh3Lw74TqSM="
+          on:
+            tags: true
