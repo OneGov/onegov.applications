@@ -1,3 +1,6 @@
+# only test tagged commits
+if: tag IS present
+
 language: python
 python: "3.4"
 cache: pip
@@ -25,10 +28,12 @@ addons:
       - google-chrome-stable
 
 install:
-  - ./.travis-install.sh
+  - python install_requirements.py
 
 script:
-  - ./.travis-test.sh
+  - py.test -s
+  - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > "${TRAVIS_BUILD_DIR}"/requirements.txt
+  - cat requirements.txt
 
 jobs:
   include:
