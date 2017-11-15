@@ -28,9 +28,7 @@ install:
   - ./.travis-install.sh
 
 script:
-  - py.test -s
-  - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > $TRAVIS_BUILD_DIR/requirements.txt
-  - cat requirements.txt
+  - ./.travis-test.sh
 
 jobs:
   include:
