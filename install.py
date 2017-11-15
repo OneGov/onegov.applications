@@ -75,7 +75,7 @@ class Installer(object):
         requirements = (line for line in requirements if line)
         requirements = list(requirements)
 
-        for ix, requirement in requirements:
+        for ix, requirement in enumerate(requirements):
             if 'onegov.applications' in requirement:
                 requirements[ix] = 'onegov.applications=={}'.format(
                     self.version)
