@@ -25,6 +25,13 @@ env:
     - ONEGOV_APPLICATION=onegov.onboarding
     - ONEGOV_APPLICATION=onegov.gazette
 
+install:
+  - pip install travispy
+  - python install.py
+
+script:
+  - py.test -s
+
 addons:
   postgresql: "9.3"
   apt:
@@ -43,18 +50,9 @@ jobs:
       install:
         - pip install travispy
         - python install.py
-        - echo '<requirements>\n'; pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g"; echo '\n</requirements>'
+        - echo '<requirements>'; pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g"; echo '</requirements>'
       script: skip
-    - stage: test
-      install:
-        - pip install travispy
-        - python install.py
-      script:
-        - py.test -s
     - stage: release
-      install:
-        - pip install travispy
-        - python install.py
       script: skip
       deploy:
         - provider: releases
