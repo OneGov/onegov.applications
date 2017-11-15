@@ -85,9 +85,8 @@ class Installer(object):
         print("Requirements for {}:".format(self.version))
         print(requirements)
 
-        self.s3.put_object(
+        self.s3.create_bucket(Bucket=self.bucket).put_object(
             ACL='private',
-            Bucket=self.bucket,
             Body=requirements.encode('utf-8'),
             Key=self.bucket_key,
             Expires=datetime.today() + timedelta(days=30)
