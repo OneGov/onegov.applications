@@ -1,78 +1,104 @@
 #!/usr/bin/python
 
+import boto3
 import json
 import os
+import subprocess
 
-from travispy import TravisPy
-
-
-def upgrade_virtualenv():
-    os.system('pip install --upgrade pip')
-    os.system('pip install --upgrade setuptools')
-    os.system('pip --version')
+from datetime import datetime, timedelta
+from tempfile import NamedTemporaryFile
 
 
-def install_testing():
-    url = 'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
-    os.system('pip install {}'.format(url))
+class Installer(object):
 
+    # the version of onegov.applications
+    version = os.environ['TRAVIS_TAG']
 
-def install_applications():
-    with open('onegov/applications/applications.json') as f:
-        applications = json.load(f)
+    # the place where artifacts are stored
+    access_key = os.environ['S3_ACCESS_KEY']
+    secret_key = os.environ['S3_SECRET_KEY']
+    endpoint = 'https://objects.cloudscale.ch'
 
-    for application in applications:
-        os.system('pip install {} -c requirements.txt'.format(
-            application['tests']))
+    # the bucket where build artifacts needed between the stages are stored
+    bucket = 'artifacts'
+    bucket_key = 'onegov-applications-{}'.format(version)
 
-    os.system('pip install .[test] -c requirements.txt')
+    # true if this is the install stage
+    # (in the future we should have TRAVIS_STAGE)
+    is_install_stage = os.environ.get('STAGE') == 'install'
 
+    # the build directory
+    current_dir = os.environ['TRAVIS_BUILD_DIR']
 
-def load_requirements(path, github_token, current_build_id, current_job_id):
-    """ Load the requirements produced by the install stage and store it
-    as a requirements.txt file. This way we can be sure that all test jobs
-    as well as the deployment stage share the exact same requirements.
+    def __init__(self):
+        session = boto3.session.Session(self.access_key, self.secret_key)
 
-    Excludes the onegov.applications line as it makes no sense to useit.
+        self.s3 = session.resource('s3', endpoint_url=self.endpoint)
+        self.s3.create_bucket(Bucket=self.bucket)
 
-    If this *is* the install stage the constraints.txt will be empty.
+        self.requirements_txt = NamedTemporaryFile('rw')
+        os.chdir(self.current_dir)
 
-    """
-    requirements = []
+    def pip_install(self, arguments):
+        os.system('pip install -c {} {}'.format(
+            self.requirements_txt.name,
+            arguments))
 
-    api = TravisPy.github_auth(github_token)
-    build = api.build(current_build_id)
+    def run(self):
+        if not self.is_install_stage:
+            self.load_requirements()
 
-    install_job = next((
-        job for job in build.jobs
-        if (
-            job.config['stage'].lower() == 'install' and
-            job.id != int(current_job_id)
+        # upgrade virtual env
+        os.system('pip install --upgrade pip')
+        os.system('pip install --upgrade setuptools')
+
+        # install testing
+        self.pip_install(
+            'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
         )
-    ), None)
 
-    if install_job:
-        in_block = False
+        # install application
+        with open('onegov/applications/applications.json') as f:
+            applications = json.load(f)
 
-        for line in install_job.log.body.splitlines():
-            if in_block and 'onegov.applications' not in line:
-                requirements.append(line)
-            if '<requirements>' in line:
-                in_block = True
-            if '</requirements>' in line:
-                break
+            for application in applications:
+                self.pip_install(application['tests'])
 
-    with open(os.path.join(path, 'requirements.txt'), 'w') as f:
-        f.writelines(requirements)
+            self.pip_install('.[test]')
+
+        if self.is_install_stage:
+            self.save_requirements()
+
+    def save_requirements(self):
+        requirements = subprocess.check_output(('pip', 'freeze'))
+        requirements = (line.strip() for line in requirements.splitlines())
+        requirements = (line for line in requirements if line)
+        requirements = list(requirements)
+
+        for ix, requirement in requirements:
+            if 'onegov.applications' in requirement:
+                requirements[ix] = 'onegov.applications=={}'.format(
+                    self.version)
+
+        requirements = '\n'.join(requirements)
+
+        print("Requirements for {}:".format(self.version))
+        print(requirements)
+
+        self.s3.put_object(
+            ACL='private',
+            Bucket=self.bucket,
+            Body=requirements.encode('utf-8'),
+            Key=self.bucket_key,
+            Expires=datetime.today() + timedelta(days=30)
+        )
+
+    def load_requirements(self):
+        obj = self.s3.Object(self.bucket, self.bucket_id)
+
+        self.requirements_txt.write(obj.get()['Body'].decode('utf-8'))
+        self.requirements_txt.flush()
 
 
 if __name__ == '__main__':
-    upgrade_virtualenv()
-    install_testing()
-    load_requirements(
-        os.environ['TRAVIS_BUILD_DIR'],
-        os.environ['TRAVIS_GITHUB_TOKEN'],
-        os.environ['TRAVIS_BUILD_ID'],
-        os.environ['TRAVIS_JOB_ID']
-    )
-    install_applications()
+    Installer().run()
