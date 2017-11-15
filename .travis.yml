@@ -52,6 +52,7 @@ jobs:
   include:
     - stage: install
       install:
+        - pip install boto3
         - STAGE='install' python install.py
       script: skip
     - stage: release
