@@ -36,7 +36,7 @@ class Installer(object):
         self.s3 = session.resource('s3', endpoint_url=self.endpoint)
         self.s3.create_bucket(Bucket=self.bucket)
 
-        self.requirements_txt = NamedTemporaryFile('rw')
+        self.requirements_txt = NamedTemporaryFile('r+')
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments):
@@ -98,6 +98,7 @@ class Installer(object):
 
         self.requirements_txt.write(obj.get()['Body'].decode('utf-8'))
         self.requirements_txt.flush()
+        self.requirements_txt.seek(0)
 
 
 if __name__ == '__main__':
