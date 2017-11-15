@@ -32,11 +32,10 @@ class Installer(object):
 
     def __init__(self):
         session = boto3.session.Session(self.access_key, self.secret_key)
-
         self.s3 = session.resource('s3', endpoint_url=self.endpoint)
-        self.s3.create_bucket(Bucket=self.bucket)
 
         self.requirements_txt = NamedTemporaryFile('r+')
+
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments):
