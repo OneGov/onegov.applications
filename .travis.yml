@@ -1,9 +1,13 @@
-# only test tagged commits
-if: tag IS present
-
 language: python
 python: "3.4"
 cache: pip
+
+# only test tagged commits
+if: tag IS present
+
+# limit git clone depth
+git:
+  depth: 3
 
 # required for google chrome
 dist: trusty
