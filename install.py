@@ -72,12 +72,8 @@ class Installer(object):
         requirements = subprocess.check_output(('pip', 'freeze'))
         requirements = (line.strip() for line in requirements.splitlines())
         requirements = (line.decode('utf-8') for line in requirements if line)
-        requirements = list(requirements)
-
-        for ix, requirement in enumerate(requirements):
-            if 'onegov.applications' in requirement:
-                requirements[ix] = 'onegov.applications=={}'.format(
-                    self.version)
+        requirements = (
+            line for line in requirements if 'onegov.applications' not in line)
 
         requirements = '\n'.join(requirements)
 
