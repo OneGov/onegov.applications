@@ -55,6 +55,12 @@ class Installer(object):
         os.system('pip install --upgrade pip')
         os.system('pip install --upgrade setuptools')
 
+        # install testing (cannot be constrained)
+        url = (
+            'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
+        )
+        os.system('pip install {}'.format(url))
+
         # install application
         with open('onegov/applications/applications.json') as f:
             applications = json.load(f)
@@ -63,12 +69,6 @@ class Installer(object):
                 self.pip_install(application['tests'])
 
             self.pip_install('.[test]')
-
-        # install testing (cannot be constrained, so we run it after
-        # installing the application - existing requirements should then
-        # be reused)
-        url = 'https://codeload.github.com/OneGov/onegov_testing/zip/master'
-        os.system('pip install {}'.format(url))
 
         if self.is_install_stage:
             self.save_requirements()
