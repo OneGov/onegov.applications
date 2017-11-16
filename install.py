@@ -39,9 +39,13 @@ class Installer(object):
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments):
-        os.system('pip install -c {} {}'.format(
-            self.requirements_txt.name,
-            arguments))
+        command = 'pip install -c {} {}'.format(
+            self.requirements_txt.name, arguments
+        )
+
+        print('>>>', command)
+
+        os.system(command)
 
     def run(self):
         if not self.is_install_stage:
@@ -51,10 +55,6 @@ class Installer(object):
         os.system('pip install --upgrade pip')
         os.system('pip install --upgrade setuptools')
 
-        # install testing
-        self.pip_install(
-            'https://codeload.github.com/OneGov/onegov_testing/zip/master')
-
         # install application
         with open('onegov/applications/applications.json') as f:
             applications = json.load(f)
@@ -63,6 +63,12 @@ class Installer(object):
                 self.pip_install(application['tests'])
 
             self.pip_install('.[test]')
+
+        # install testing (cannot be constrained, so we run it after
+        # installing the application - existing requirements should then
+        # be reused)
+        url = 'https://codeload.github.com/OneGov/onegov_testing/zip/master'
+        os.system('pip install {}'.format(url))
 
         if self.is_install_stage:
             self.save_requirements()
