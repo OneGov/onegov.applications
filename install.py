@@ -53,8 +53,7 @@ class Installer(object):
 
         # install testing
         self.pip_install(
-            'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
-        )
+            'https://codeload.github.com/OneGov/onegov_testing/zip/master')
 
         # install application
         with open('onegov/applications/applications.json') as f:
