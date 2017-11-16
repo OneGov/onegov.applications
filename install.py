@@ -39,25 +39,21 @@ class Installer(object):
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments, constrain=True):
-        if constrain:
-            extra = f'-c {self.requirements_txt.name}'
-        else:
-            extra = ''
-        os.system(f'pip install {extra} {arguments}')
+        os.system(f'pip install -c {self.requirements_txt.name} {arguments}')
 
     def run(self):
         if not self.is_install_stage:
             self.load_requirements()
 
         # upgrade virtual env
-        self.pip_install('--upgrade pip', constrain=False)
-        self.pip_install('--upgrade setuptools', constrain=False)
+        os.system('pip install --upgrade pip')
+        os.system('pip install --upgrade setuptools')
 
         # install testing (cannot be constrained)
         url = (
             'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
         )
-        self.pip_install(url, constrain=False)
+        os.system(f'pip install {url}')
 
         # install application
         with open('onegov/applications/applications.json') as f:
