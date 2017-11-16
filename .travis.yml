@@ -1,5 +1,5 @@
 language: python
-python: "3.6"
+python: "3.4"
 cache: pip
 
 # only test tagged commits
@@ -60,7 +60,6 @@ jobs:
       install:
         - pip install boto3
         - STAGE='install' python install.py
-        # stores the effectively used list of packages as requirements.txt, which we use in our deployments as constraints
         - pip freeze | sed -r "s/^-e git.*?egg=([a-z\._]+)$/\1==${TRAVIS_TAG:1}/g" > "${TRAVIS_BUILD_DIR}"/requirements.txt
       deploy:
         - provider: releases
