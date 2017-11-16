@@ -54,10 +54,10 @@ class Installer(object):
         self.pip_install('--upgrade setuptools', constrain=False)
 
         # install testing (cannot be constrained)
-        self.pip_install(
-            'git+git://github.com/OneGov/onegov_testing#egg=onegov_testing',
-            constrain=False
+        url = (
+            'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
         )
+        self.pip_install(url, constrain=False)
 
         # install application
         with open('onegov/applications/applications.json') as f:
