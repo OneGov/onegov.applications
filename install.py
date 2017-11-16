@@ -21,7 +21,7 @@ class Installer(object):
 
     # the bucket where build artifacts needed between the stages are stored
     bucket = 'artifacts'
-    bucket_key = 'onegov-applications-{}'.format(version)
+    bucket_key = f'onegov-applications-{version}'
 
     # true if this is the install stage
     # (in the future we should have TRAVIS_STAGE)
@@ -38,26 +38,25 @@ class Installer(object):
 
         os.chdir(self.current_dir)
 
-    def pip_install(self, arguments):
-        command = 'pip install -c {} {}'.format(
-            self.requirements_txt.name, arguments
-        )
-
-        print('>>>', command)
-
-        os.system(command)
+    def pip_install(self, arguments, constrain=True):
+        if constrain:
+            extra = f'-c {self.requirements_txt.name}'
+        else:
+            extra = ''
+        os.system(f'pip install {extra} {arguments}')
 
     def run(self):
         if not self.is_install_stage:
             self.load_requirements()
 
         # upgrade virtual env
-        os.system('pip install --upgrade pip')
-        os.system('pip install --upgrade setuptools')
+        self.pip_install('--upgrade pip', constrain=False)
+        self.pip_install('--upgrade setuptools', constrain=False)
 
         # install testing (cannot be constrained)
         self.pip_install(
-            'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
+            'git+git://github.com/OneGov/onegov_testing#egg=onegov_testing',
+            constrain=False
         )
 
         # install application
@@ -81,7 +80,7 @@ class Installer(object):
 
         requirements = '\n'.join(requirements)
 
-        print("Requirements for {}:".format(self.version))
+        print(f"Requirements for onegov.applications {self.version}:")
         print(requirements)
 
         self.s3.create_bucket(Bucket=self.bucket).put_object(
