@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import boto3
+import json
 import os
 import subprocess
 
@@ -52,8 +53,16 @@ class Installer(object):
         url = 'git+git://github.com/OneGov/onegov_testing#egg=onegov_testing'
         os.system(f'pip install {url}')
 
-        # install application (editable seems to be required)
-        self.pip_install('-e .[test]')
+        # install application
+        with open('onegov/applications/applications.json') as f:
+            applications = json.load(f)
+
+        for application in applications:
+            self.pip_install(application['tests'])
+
+        # seems to be required for onegov.core to be importable (weird, works
+        # in a vanilla virtual env without tests)
+        self.pip_install('-e .')
 
         if self.is_install_stage:
             self.upload_requirements()
