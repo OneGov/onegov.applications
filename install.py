@@ -56,10 +56,9 @@ class Installer(object):
         os.system('pip install --upgrade setuptools')
 
         # install testing (cannot be constrained)
-        url = (
+        self.pip_install(
             'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
         )
-        os.system('pip install {}'.format(url))
 
         # install application
         with open('onegov/applications/applications.json') as f:
