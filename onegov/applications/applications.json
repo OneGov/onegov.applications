@@ -22,5 +22,9 @@
     {
         "package": "onegov.gazette",
         "tests": "onegov.gazette[test]"
+    },
+    {
+        "package": "onegov.intranet",
+        "tests": "onegov.intranet[test]"
     }
 ]

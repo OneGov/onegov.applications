@@ -28,6 +28,7 @@ env:
     - ONEGOV_APPLICATION=onegov.feriennet
     - ONEGOV_APPLICATION=onegov.onboarding
     - ONEGOV_APPLICATION=onegov.gazette
+    - ONEGOV_APPLICATION=onegov.intranet
 
 install:
   - pip install boto3
