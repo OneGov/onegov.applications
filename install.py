@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import boto3
-import json
 import os
 import subprocess
 
@@ -21,7 +20,7 @@ class Installer(object):
 
     # the bucket where build artifacts needed between the stages are stored
     bucket = 'artifacts'
-    bucket_key = 'onegov-applications-{}'.format(version)
+    bucket_key = f'onegov-applications-{version}'
 
     # true if this is the install stage
     # (in the future we should have TRAVIS_STAGE)
@@ -39,41 +38,27 @@ class Installer(object):
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments):
-        command = 'pip install -c {} {}'.format(
-            self.requirements_txt.name, arguments
-        )
-
-        print('>>>', command)
-
-        os.system(command)
+        os.system(f'pip install -c {self.requirements_txt.name} {arguments}')
 
     def run(self):
         if not self.is_install_stage:
-            self.load_requirements()
+            self.download_requirements()
 
         # upgrade virtual env
         os.system('pip install --upgrade pip')
         os.system('pip install --upgrade setuptools')
 
         # install testing (cannot be constrained)
-        url = (
-            'git+git://github.com/OneGov/onegov_testing.git#egg=onegov_testing'
-        )
-        os.system('pip install {}'.format(url))
+        url = 'git+git://github.com/OneGov/onegov_testing#egg=onegov_testing'
+        os.system(f'pip install {url}')
 
-        # install application
-        with open('onegov/applications/applications.json') as f:
-            applications = json.load(f)
-
-            for application in applications:
-                self.pip_install(application['tests'])
-
-            self.pip_install('.[test]')
+        # install application (editable seems to be required)
+        self.pip_install('-e .[test]')
 
         if self.is_install_stage:
-            self.save_requirements()
+            self.upload_requirements()
 
-    def save_requirements(self):
+    def upload_requirements(self):
         requirements = subprocess.check_output(('pip', 'freeze'))
         requirements = (line.strip() for line in requirements.splitlines())
         requirements = (line.decode('utf-8') for line in requirements if line)
@@ -82,7 +67,7 @@ class Installer(object):
 
         requirements = '\n'.join(requirements)
 
-        print("Requirements for {}:".format(self.version))
+        print(f"Requirements for {self.version}:")
         print(requirements)
 
         self.s3.create_bucket(Bucket=self.bucket).put_object(
@@ -92,7 +77,7 @@ class Installer(object):
             Expires=datetime.today() + timedelta(days=30)
         )
 
-    def load_requirements(self):
+    def download_requirements(self):
         obj = self.s3.Object(self.bucket, self.bucket_key)
 
         self.requirements_txt.write(obj.get()['Body'].read().decode('utf-8'))
