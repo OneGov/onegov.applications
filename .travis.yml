@@ -15,7 +15,7 @@ dist: trusty
 env:
   global:
     - ES_VERSION=5.6.0
-    - JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
+    - JAVA_HOME=/usr/lib/jvm/java-9-oracle/jre
     # S3_ACCESS_KEY
     - secure: "fZ2HsqCfj7BFEWwIaVtr4n86cm8maeFOH8tVpx4ZKMS7O1b7pKYwWKf1HywwpAkXOF00yvpZCBCinJwsYY5VLlHOUA6wHvpv0DN654RmuaxvNUIEn5howh2YB9Z/xCMccLHPr4PsR6lNdQKH0fV5qC56kX701KIqtK0uuTXgT6IVHoS9onJBgggOQnDJ83mn/I0i7wpdshDii46bYyF5Rfg++m5aVAB4WP/LY3/q81J2um2inD2tx2FLG8IjiAZoQOPcdoWhukUSZ1Ngz1pxWuMAIOFZDJ5ysfRNO/OMUKfGs3vJHvSgU84iwUK9EHw43VoDqHSsiGGwvwybjztMO4vOWE7NKDs7mkf9cQerMXf34eKb20EtjTCsIKdjwTpq40ITy/7zPiUlXZEX6ShC1LJHT422N/GqDV4FOBbvJpaLId63ukOqAQ8qVKqKfyGbWRa90DwU9MB2hpYErMBlOliP1GZADekX6A2/3wAO1qmEWIgl7KRNovKy4a6xWNedzEwFHC3ahNAoZn270gXKT+DDv6qrg06kROsBv1dFyeSN7OeWp27M248GHFd8fxPVzdJWQKWUH4oytZ5FNPnc9eHvtF4vrmzku/HYolEgL6Vpo9WQGXYeTkpa93ajzCGAjeZp1bBY3la3PfKB1OlylVWZVhNrLs2tJJBgHPgp1gQ="
     # S3_SECRET_KEY
@@ -41,7 +41,7 @@ addons:
   postgresql: "9.6"
   apt:
     packages:
-      - oracle-java8-set-default
+      - oracle-java9-set-default
       - google-chrome-stable
 
 stages:
