@@ -26,5 +26,9 @@
     {
         "package": "onegov.intranet",
         "tests": "onegov.intranet[test]"
+    },
+    {
+        "package": "onegov.winterthur",
+        "tests": "onegov.winterthur[test]"
     }
 ]
