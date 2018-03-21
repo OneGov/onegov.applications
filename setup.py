@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 name = 'onegov.applications'
 description = ('Meta-package containing all OneGov Cloud applications.')
-version = '2018.3.11'
+version = '2018.3.12'
 
 
 def get_long_description():
