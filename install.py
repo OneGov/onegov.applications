@@ -39,10 +39,7 @@ class Installer(object):
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments):
-        os.system((
-            f'pip install -c {self.requirements_txt.name} {arguments} '
-            f'--no-binary pillow'
-        ))
+        os.system(f'pip install -c {self.requirements_txt.name} {arguments}')
 
     def run(self):
         if not self.is_install_stage:
@@ -51,6 +48,9 @@ class Installer(object):
         # upgrade virtual env
         os.system('pip install --upgrade pip')
         os.system('pip install --upgrade setuptools')
+
+        # install pip separately due to it's wheel being buggy on travis
+        os.system('pip install --upgrade pillow --no-binary :all:')
 
         # install testing (cannot be constrained)
         url = 'git+git://github.com/OneGov/onegov_testing#egg=onegov_testing'
