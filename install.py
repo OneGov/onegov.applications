@@ -39,7 +39,10 @@ class Installer(object):
         os.chdir(self.current_dir)
 
     def pip_install(self, arguments):
-        os.system(f'pip install -c {self.requirements_txt.name} {arguments}')
+        os.system((
+            f'pip install -c {self.requirements_txt.name} {arguments} '
+            f'--no-binary pillow'
+        ))
 
     def run(self):
         if not self.is_install_stage:
