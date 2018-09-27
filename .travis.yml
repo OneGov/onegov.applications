@@ -45,6 +45,7 @@ addons:
       - oracle-java9-set-default
       - google-chrome-stable
       - ghostscript
+      - libpoppler-cpp-dev
 
 stages:
   - install
