@@ -52,6 +52,9 @@ class Installer(object):
         # install pip separately due to it's wheel being buggy on travis
         os.system('pip install --upgrade pillow --no-binary :all:')
 
+        # travis comes with pre-installed pytest release which is outdated
+        os.system('pip install --upgrade pytest')
+
         # install testing (cannot be constrained)
         url = 'git+git://github.com/OneGov/onegov_testing#egg=onegov_testing'
         os.system(f'pip install {url}')
