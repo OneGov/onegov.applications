@@ -48,6 +48,9 @@ addons:
       - ghostscript
       - libpoppler-cpp-dev
 
+services:
+  - redis-server
+
 stages:
   - install
   - test
