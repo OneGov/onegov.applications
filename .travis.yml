@@ -31,6 +31,7 @@ env:
     - ONEGOV_APPLICATION=onegov.winterthur
     - ONEGOV_APPLICATION=onegov.swissvotes
     - ONEGOV_APPLICATION=onegov.agency
+    - ONEGOV_APPLICATION=onegov.wtfs
 
 install:
   - pip install boto3
