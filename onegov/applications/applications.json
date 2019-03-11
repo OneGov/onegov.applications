@@ -38,7 +38,7 @@
     {
         "package": "onegov.agency",
         "tests": "onegov.agency[test]"
-    }
+    },
     {
         "package": "onegov.wtfs",
         "tests": "onegov.wtfs[test]"
