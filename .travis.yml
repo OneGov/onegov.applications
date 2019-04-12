@@ -42,10 +42,10 @@ script:
 
 addons:
   postgresql: "9.6"
+  chrome: stable
   apt:
     packages:
       - oracle-java9-set-default
-      - google-chrome-stable
       - ghostscript
       - libpoppler-cpp-dev
 
