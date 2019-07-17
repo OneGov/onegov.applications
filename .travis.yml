@@ -46,6 +46,9 @@ addons:
       - openjdk-8-jre-headless
       - ghostscript
       - libpoppler-cpp-dev
+      - libgnutls28-dev
+      - libev-dev
+
 
 services:
   - redis-server
