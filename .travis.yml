@@ -9,9 +9,6 @@ if: tag IS present
 git:
   depth: 3
 
-# required for google chrome
-dist: trusty
-
 env:
   global:
     - JAVA_HOME=/usr/lib/jvm/java-9-oracle/jre
@@ -45,7 +42,7 @@ addons:
   chrome: stable
   apt:
     packages:
-      - oracle-java9-set-default
+      - openjdk-8-jre-headless
       - ghostscript
       - libpoppler-cpp-dev
 
