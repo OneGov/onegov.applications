@@ -1,3 +1,3 @@
 year = 2019
 month = 8
-build = 6
+build = 7
